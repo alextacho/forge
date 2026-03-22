@@ -8,10 +8,16 @@ A Claude Code skill for developing, testing, and publishing Claude Code plugins.
 
 ## Installation
 
-Link `forge` into your Claude Code installation:
+**Step 1: Add the marketplace**
 
 ```bash
-ln -s /path/to/forge/skills/forge.md ~/.claude/skills/forge.md
+claude plugin marketplace add <owner>/forge
+```
+
+**Step 2: Install the plugin**
+
+```bash
+claude plugin install forge@forge
 ```
 
 Then invoke it from inside any plugin project directory.

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "forge",
+  "version": "0.1.0",
+  "description": "Plugin development lifecycle manager for Claude Code. Scaffold, develop, test, and package plugins with /forge:* commands.",
+  "plugins": [
+    {
+      "name": "forge",
+      "description": "Plugin development lifecycle manager for Claude Code. Scaffold, develop, test, and package plugins.",
+      "source": ".",
+      "category": "developer-tools"
+    }
+  ]
+}
