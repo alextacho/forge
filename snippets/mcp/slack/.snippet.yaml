@@ -1,0 +1,10 @@
+name: slack
+category: mcp
+description: Slack messaging, search, and channel access via Slack MCP
+installs:
+  - .mcp.json
+requires:
+  env:
+    - SLACK_BOT_TOKEN
+    - SLACK_TEAM_ID
+notes: "Set SLACK_BOT_TOKEN (xoxb-...) and SLACK_TEAM_ID. Create a Slack app with channels:read, chat:write, and search:read scopes."

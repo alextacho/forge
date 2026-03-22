@@ -1,0 +1,6 @@
+name: post-commit
+category: hooks
+description: Run a script after each git commit (e.g. notify, log, sync)
+installs:
+  - hooks/hooks.json
+notes: "Edit hooks/hooks.json to replace the example command with your post-commit action."

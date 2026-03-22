@@ -1,0 +1,6 @@
+name: lint-on-save
+category: hooks
+description: Run ESLint after Write or Edit tool use on JS/TS files
+installs:
+  - hooks/hooks.json
+notes: "Requires eslint in your project: `npm install eslint`. Customize the matcher to your file extensions."

@@ -1,0 +1,4 @@
+workspace/
+dist/
+.claude/
+.DS_Store

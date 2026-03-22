@@ -1,0 +1,9 @@
+name: linear
+category: mcp
+description: Linear issue tracking — read and create issues, projects, and cycles
+installs:
+  - .mcp.json
+requires:
+  env:
+    - LINEAR_API_KEY
+notes: "Set LINEAR_API_KEY to a Linear personal API key from Settings → API."

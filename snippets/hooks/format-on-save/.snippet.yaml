@@ -1,0 +1,6 @@
+name: format-on-save
+category: hooks
+description: Auto-format files after Write or Edit tool use
+installs:
+  - hooks/hooks.json
+notes: "Runs `prettier --write` on the modified file. Requires prettier: `npm install -g prettier`"

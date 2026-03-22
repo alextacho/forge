@@ -1,0 +1,6 @@
+name: playwright
+category: mcp
+description: Browser automation via Playwright MCP
+installs:
+  - .mcp.json
+notes: "Run `npx playwright install` before first use."

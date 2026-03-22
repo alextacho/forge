@@ -1,0 +1,9 @@
+name: github
+category: mcp
+description: GitHub repos, PRs, issues, and actions via GitHub MCP
+installs:
+  - .mcp.json
+requires:
+  env:
+    - GITHUB_PERSONAL_ACCESS_TOKEN
+notes: "Set GITHUB_PERSONAL_ACCESS_TOKEN to a GitHub PAT with repo scope."

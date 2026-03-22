@@ -1,0 +1,9 @@
+name: notion
+category: mcp
+description: Notion workspace read/write via Notion MCP
+installs:
+  - .mcp.json
+requires:
+  env:
+    - NOTION_API_KEY
+notes: "Set NOTION_API_KEY to your Notion integration token. Create one at https://www.notion.so/my-integrations"

@@ -1,0 +1,6 @@
+name: daily-cron
+category: infra
+description: Run a skill on a daily schedule via launchd (macOS) or cron
+installs:
+  - scripts/daily-cron.sh
+notes: "Edit scripts/daily-cron.sh to set the skill to run and the schedule. Then follow the comments in the script to install."

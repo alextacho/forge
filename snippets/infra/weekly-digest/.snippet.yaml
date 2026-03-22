@@ -1,0 +1,6 @@
+name: weekly-digest
+category: infra
+description: Run a digest skill every week (e.g. Monday morning summary)
+installs:
+  - scripts/weekly-digest.sh
+notes: "Edit scripts/weekly-digest.sh to set the skill and schedule, then install via cron or launchd."

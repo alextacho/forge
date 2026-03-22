@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gcal": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gcal"]
+    }
+  }
+}

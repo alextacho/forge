@@ -1,0 +1,6 @@
+name: gcal
+category: mcp
+description: Google Calendar read/write via Google Workspace MCP
+installs:
+  - .mcp.json
+notes: "Requires Google OAuth credentials. Follow setup at https://github.com/modelcontextprotocol/servers/tree/main/src/gcal"

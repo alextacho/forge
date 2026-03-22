@@ -1,0 +1,6 @@
+name: gmail
+category: mcp
+description: Gmail read, search, and draft via Google Workspace MCP
+installs:
+  - .mcp.json
+notes: "Requires Google OAuth credentials. Follow setup at https://github.com/modelcontextprotocol/servers/tree/main/src/gmail"
