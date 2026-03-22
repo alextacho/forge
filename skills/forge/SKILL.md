@@ -121,8 +121,12 @@ Install a snippet into the current plugin project.
 Read and update `PLAN.md` — design notes, task checklist, done log.
 → `commands/forge/plan.md`
 
+### /forge:release [patch|minor|major]
+Bump version in `plugin.json` and `marketplace.json`, commit, and push. Complete release flow for marketplace-distributed plugins.
+→ `commands/forge/release.md`
+
 ### /forge:pack
-Validate then package into `dist/<name>-v<version>.plugin`.
+Validate then package into `dist/<name>-v<version>.plugin`. For manual or offline distribution only — not needed for marketplace releases.
 → `commands/forge/pack.md`
 
 ---

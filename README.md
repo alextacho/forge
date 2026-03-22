@@ -265,9 +265,27 @@ Copies the snippet's files into the appropriate location in your plugin project 
 
 ---
 
+### `/forge:release [patch|minor|major]`
+
+Bump the version, commit, and push a new release. Default: `patch`.
+
+```
+/forge:release patch
+/forge:release minor
+/forge:release major
+```
+
+Pre-checks:
+1. `/forge:validate` must pass (no errors)
+2. Git working tree must be clean
+
+Steps: increments the semver version in `plugin.json` and `marketplace.json`, sets `status: "published"`, commits both files, and pushes. Claude Code marketplaces pull directly from GitHub, so this is the complete release flow.
+
+---
+
 ### `/forge:pack`
 
-Validate and package the plugin into a distributable file.
+Validate and package the plugin into a distributable zip file. Only needed for manual or offline distribution — not required for marketplace releases.
 
 ```
 /forge:pack
@@ -276,7 +294,7 @@ Validate and package the plugin into a distributable file.
 Pre-checks:
 1. `/forge:validate` must pass (no errors)
 2. Git working tree must be clean
-3. `plugin.json` `status` must be `"published"` (set this manually when ready)
+3. `plugin.json` `status` must be `"published"`
 
 Output: `dist/<name>-v<version>.plugin`
 
@@ -312,11 +330,18 @@ mkdir my-plugin && cd my-plugin
 /forge:save after-first-run
 ```
 
-### Publishing
+### Releasing via marketplace
 
 ```
 /forge:validate
-# bump version in plugin.json, set status: "published"
+/forge:release patch   # bumps version, commits, pushes — done
+```
+
+### Packaging for manual distribution
+
+```
+/forge:validate
+# bump version in plugin.json and marketplace.json, set status: "published"
 /forge:pack
 ```
 
