@@ -31,15 +31,15 @@ Interactive scaffold for a new Claude Code plugin project.
 }
 ```
 
-`forge.yaml` (only if workspace requested):
+`forge.yaml` (only if workspace or scaffold requested):
 ```yaml
 workspace:
   root: workspace/
   structure:
     - <subdir1>
 
-dev:
-  fixtures_dir: fixtures/
+scaffold:
+  - <path>          # e.g. skills/registry.yaml
 ```
 
 `PLAN.md`:
@@ -58,11 +58,14 @@ dev:
 `.gitignore`:
 ```
 workspace/
+.forge/fixtures/
 dist/
 .DS_Store
 ```
 
-Skeleton directories: `skills/`, `agents/`, `commands/` (and `workspace/<subdirs>/`, `fixtures/` if workspace requested).
+Skeleton directories: `skills/`, `agents/`, `commands/` (and `workspace/<subdirs>/`, `.forge/scaffolds/`, `.forge/fixtures/` if workspace or scaffold requested).
+
+For each scaffold path declared: ask the developer to provide initial template content, then write it to `.forge/scaffolds/<basename>` and copy to the declared path.
 
 **Report:** list every file and directory created. Suggest next steps:
 - Add skills/agents to their directories

@@ -1,2 +1,2 @@
 dev:
-  fixtures_dir: dev/fixtures/
+  fixtures_dir: .forge/fixtures/
