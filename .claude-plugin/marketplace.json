@@ -3,11 +3,14 @@
   "name": "forge",
   "version": "0.1.0",
   "description": "Plugin development lifecycle manager for Claude Code. Scaffold, develop, test, and package plugins with /forge:* commands.",
+  "owner": {
+    "name": "alextacho"
+  },
   "plugins": [
     {
       "name": "forge",
       "description": "Plugin development lifecycle manager for Claude Code. Scaffold, develop, test, and package plugins.",
-      "source": ".",
+      "source": "./",
       "category": "developer-tools"
     }
   ]

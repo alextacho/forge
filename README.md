@@ -352,3 +352,9 @@ mkdir my-plugin && cd my-plugin
 - Files inside `skills/`, `agents/`, `commands/`, `context/` — those are the plugin's responsibility
 - Committed defaults (`publish.context` files)
 - The workspace directory structure (reset clears contents, not dirs)
+
+---
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
