@@ -2,7 +2,7 @@
 description: Scaffold a new plugin project from scratch
 ---
 
-Read `.claude-plugin/plugin.json` — if it already exists, warn that a plugin is already here and stop.
+Read `.claude-plugin/plugin.json` — if it already exists, stop: "A plugin already exists here. Run /forge:init to add forge infrastructure to it, or /forge:status to see its current state."
 
 ## /forge:new
 
