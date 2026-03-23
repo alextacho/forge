@@ -31,16 +31,16 @@ Interactive scaffold for a new Claude Code plugin project.
 }
 ```
 
-`forge.yaml` (only if workspace or scaffold requested):
+`forge.yaml` (only if reset paths or scaffold requested):
 ```yaml
-workspace:
-  root: workspace/
-  structure:
-    - <subdir1>
+reset:
+  - workspace/*     # all contents of workspace/ recursively
+  - <dir>/*         # e.g. agents/extractors/*
 
 scaffold:
-  - <path>          # e.g. skills/registry.yaml
+  - <path>          # e.g. skills/registry.yaml — seeded from template on reset
 ```
+Omit `reset` block if no managed paths. Omit `scaffold` block if no scaffold files.
 
 `PLAN.md`:
 ```markdown
@@ -57,15 +57,13 @@ scaffold:
 
 `.gitignore`:
 ```
-workspace/
 .forge/fixtures/
 dist/
 .DS_Store
 ```
+Also gitignore any reset paths that should be ephemeral (e.g. `workspace/`). Scaffold files themselves are committed normally — they are the templates.
 
-Skeleton directories: `skills/`, `agents/`, `commands/` (and `workspace/<subdirs>/`, `.forge/scaffolds/`, `.forge/fixtures/` if workspace or scaffold requested).
-
-For each scaffold path declared: ask the developer to provide initial template content, then write it to `.forge/scaffolds/<basename>` and copy to the declared path.
+Skeleton directories: `skills/`, `agents/`, `commands/` (and directories matching `reset` paths, `.forge/fixtures/` if reset or scaffold requested).
 
 **Report:** list every file and directory created. Suggest next steps:
 - Add skills/agents to their directories

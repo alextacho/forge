@@ -23,7 +23,7 @@ Validate then package the plugin into `dist/<name>-v<version>.plugin`.
    - `.mcp.json` if present
    - `hooks/` directory if present
    - `.claude-plugin/plugin.json`
-7. Always exclude: `workspace/`, `fixtures/`, `forge.yaml`, `.claude/`, `dev/`, `dist/`, `.DS_Store`
+7. Always exclude: `workspace/`, `.forge/`, `forge.yaml`, `.claude/`, `dev/`, `dist/`, `.DS_Store`
 8. Zip into `dist/<name>-v<version>.plugin`
 9. Report: output path + count of included files
 
