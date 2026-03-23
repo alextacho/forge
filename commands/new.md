@@ -58,6 +58,9 @@ Omit `reset` block if no managed paths. Omit `scaffold` block if no scaffold fil
 `.gitignore`:
 ```
 .forge/fixtures/
+.claude/commands/
+.claude/skills/
+.claude/agents/
 dist/
 .DS_Store
 ```

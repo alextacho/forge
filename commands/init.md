@@ -35,6 +35,9 @@ Directories matching reset paths — created if not present
 **Update `.gitignore`** — append any missing entries:
 ```
 .forge/fixtures/
+.claude/commands/
+.claude/skills/
+.claude/agents/
 ```
 Also add any reset paths that should be ephemeral (ask the developer). Do not duplicate entries already present.
 
