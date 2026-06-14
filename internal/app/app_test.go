@@ -21,6 +21,7 @@ func TestParseCommands(t *testing.T) {
 		{[]string{"save", "baseline", "--yes"}, "save", "baseline", true},
 		{[]string{"load", "default"}, "load", "default", false},
 		{[]string{"reset", "--yes"}, "reset", "", true},
+		{[]string{"init", "workspace", "config/generated.yaml"}, "init", "", false},
 		{[]string{"version"}, "version", "", false},
 		{[]string{"--version"}, "version", "", false},
 		{[]string{"instructions"}, "instructions", "", false},
@@ -42,6 +43,8 @@ func TestParseRejectsInvalidArguments(t *testing.T) {
 	for _, args := range [][]string{
 		{"unknown"},
 		{"save", "one", "two"},
+		{"init"},
+		{"init", "--no-clobber", "workspace"},
 		{"load", "--no-clobber"},
 		{"reset", "name"},
 		{"version", "extra"},
@@ -52,6 +55,46 @@ func TestParseRejectsInvalidArguments(t *testing.T) {
 		if _, err := parse(args); err == nil {
 			t.Fatalf("%v: expected error", args)
 		}
+	}
+}
+
+func TestInitCreatesConfigTemplatesAndGitignore(t *testing.T) {
+	root := t.TempDir()
+	stdout, stderr, code := runForTest(t, root, []string{"init", "workspace/", "config/generated.yaml"})
+	if code != 0 {
+		t.Fatalf("init code=%d stderr=%s", code, stderr)
+	}
+	if !strings.Contains(stdout, "Initialized Forge config") {
+		t.Fatalf("stdout = %q", stdout)
+	}
+	config, err := os.ReadFile(filepath.Join(root, ".forge", "config.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantConfig := "paths:\n  - workspace\n  - config/generated.yaml\n"
+	if string(config) != wantConfig {
+		t.Fatalf("config = %q, want %q", config, wantConfig)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".forge", "templates")); err != nil {
+		t.Fatal(err)
+	}
+	gitignore, err := os.ReadFile(filepath.Join(root, ".gitignore"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(gitignore) != ".forge/snapshots/\n" {
+		t.Fatalf(".gitignore = %q", gitignore)
+	}
+}
+
+func TestInitRejectsExistingConfig(t *testing.T) {
+	root := newProject(t, []string{"workspace"})
+	_, stderr, code := runForTest(t, root, []string{"init", "other"})
+	if code == 0 {
+		t.Fatalf("init unexpectedly succeeded")
+	}
+	if !strings.Contains(stderr, "already exists") {
+		t.Fatalf("stderr = %q", stderr)
 	}
 }
 

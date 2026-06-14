@@ -25,6 +25,7 @@ type Environment struct {
 type options struct {
 	command   string
 	name      string
+	paths     []string
 	yes       bool
 	noClobber bool
 }
@@ -59,6 +60,13 @@ func Run(args []string, env Environment) int {
 	if err != nil {
 		fmt.Fprintln(env.Stderr, "Error:", err)
 		return 1
+	}
+	if opts.command == "init" {
+		if err := runInit(workingDirectory, opts, env); err != nil {
+			fmt.Fprintln(env.Stderr, "Error:", err)
+			return 1
+		}
+		return 0
 	}
 	found, err := project.Find(workingDirectory)
 	if err != nil {
@@ -109,6 +117,15 @@ func parse(args []string) (options, error) {
 	}
 
 	switch args[0] {
+	case "init":
+		flags, positional, err := parseCommandArguments(args[1:], false)
+		if err != nil {
+			return options{}, err
+		}
+		if len(positional) == 0 {
+			return options{}, fmt.Errorf("init requires at least one managed path")
+		}
+		return options{command: "init", paths: positional, yes: flags.yes}, nil
 	case "status":
 		flags, positional, err := parseCommandArguments(args[1:], false)
 		if err != nil {

@@ -5,6 +5,7 @@ const Usage = `Usage:
   forge version
   forge --version
   forge instructions
+  forge init <path> [path...]
   forge status
   forge save [name] [--yes] [--no-clobber]
   forge load [name] [--yes]
@@ -15,6 +16,7 @@ Commands:
   help          Show command syntax.
   version       Show the Forge version.
   instructions  Show agent-oriented setup and snapshot guidance.
+  init          Create .forge/config.yaml for the current project.
   status        Inspect the current Forge project without changing files.
   save          Snapshot configured paths. Defaults to snapshot "default".
   load          Restore an exact snapshot. Defaults to snapshot "default".
@@ -31,7 +33,8 @@ Project discovery:
   - The directory containing .forge/config.yaml is the project root.
 
 Configuration:
-  - Create .forge/config.yaml and commit it.
+  - Run forge init <path> [path...] to create .forge/config.yaml.
+  - Commit .forge/config.yaml and .forge/templates/ when reset should restore baseline content.
   - Configure one literal project-relative path list:
 
     paths:
@@ -40,10 +43,11 @@ Configuration:
 
   - Paths may name files or directories.
   - Absolute paths, glob patterns, .. traversal, overlapping paths, and anything under .forge/ are rejected.
-  - Add .forge/snapshots/ to .gitignore.
-  - Commit .forge/templates/ when reset should restore baseline content.
+  - forge init also creates .forge/templates/ and adds .forge/snapshots/ to .gitignore.
 
 Snapshot workflow:
+  - forge init workspace config/generated.yaml
+      Initialize Forge config for the current project.
   - forge save --yes
       Save the current configured state as the default snapshot.
   - forge save baseline --yes

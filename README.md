@@ -70,7 +70,19 @@ new one from the matching archive for your platform.
 
 ## Project setup
 
-Create `.forge/config.yaml` in the project root:
+Initialize Forge from the project root with the paths you want Forge to manage:
+
+```bash
+forge init workspace config/generated.yaml
+```
+
+This creates:
+
+- `.forge/config.yaml`
+- `.forge/templates/`
+- a `.gitignore` entry for `.forge/snapshots/`
+
+The generated config is regular YAML and should be committed:
 
 ```yaml
 paths:
@@ -110,6 +122,7 @@ forge help
 forge version
 forge --version
 forge instructions
+forge init <path> [path...]
 forge status
 forge save [name] [--yes] [--no-clobber]
 forge load [name] [--yes]
@@ -136,6 +149,16 @@ forge instructions
 Prints stable, agent-oriented instructions for project discovery, configuration,
 snapshotting, reset behavior, and safety constraints. Use this when an agent needs
 to learn how Forge should be used inside a project.
+
+### Init
+
+```bash
+forge init workspace config/generated.yaml
+```
+
+Creates `.forge/config.yaml` for the current directory, creates
+`.forge/templates/`, and ensures `.forge/snapshots/` is ignored by Git. It refuses
+to overwrite an existing Forge config.
 
 ### Status
 
@@ -230,6 +253,25 @@ Example MCP server configuration:
     }
   }
 }
+```
+
+Install the MCP server in Codex:
+
+```bash
+codex mcp add forge -- forge mcp
+```
+
+Install the MCP server in Claude Code:
+
+```bash
+claude mcp add forge -- forge mcp
+```
+
+If either CLI cannot find `forge`, use the absolute path from `which forge`:
+
+```bash
+codex mcp add forge -- /Users/alex/go/bin/forge mcp
+claude mcp add forge -- /Users/alex/go/bin/forge mcp
 ```
 
 ## Confirmation
