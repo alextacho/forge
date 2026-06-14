@@ -1,360 +1,317 @@
 # forge
 
-A Claude Code skill for developing, testing, and publishing Claude Code plugins.
+`forge` is a small CLI for saving, loading, and resetting project-local state.
 
-`forge` manages the full plugin development lifecycle — from scaffolding a new plugin to packaging a distributable release. It lives outside any plugin project and operates on whatever plugin is in your current working directory.
+It manages one configured list of files and directories:
 
----
+- `save` snapshots their current state
+- `load` restores an exact snapshot
+- `reset` restores committed template content
 
-## Installation
+Every operation shows a preview and requires confirmation unless `--yes` is supplied.
+Forge also includes agent-facing discovery commands and a read-only MCP server.
 
-**Step 1: Add the marketplace**
+## Requirements
+
+- Go 1.25 or newer
+
+## Install
+
+Install the latest tagged release with Go:
 
 ```bash
-claude plugin marketplace add <owner>/forge
+go install github.com/alextacho/forge/cmd/forge@latest
 ```
 
-**Step 2: Install the plugin**
+Install a specific version:
 
 ```bash
-claude plugin install forge@forge
+go install github.com/alextacho/forge/cmd/forge@v0.1.0
 ```
 
-Then invoke it from inside any plugin project directory.
+Or download a prebuilt binary from the
+[GitHub releases page](https://github.com/alextacho/forge/releases). Archives are
+published for macOS, Linux, and Windows on amd64 and arm64. Verify a downloaded
+archive with `checksums.txt`:
 
----
-
-## Concepts
-
-### Plugin structure
-
-`forge` works with the official Claude Code plugin structure:
-
-```
-my-plugin/
-├── .claude-plugin/
-│   └── plugin.json       # plugin metadata (name, version, skills, etc.)
-├── skills/               # skill definitions
-├── agents/               # agent definitions
-├── commands/             # slash commands
-├── hooks/                # event hooks
-├── .mcp.json             # MCP server configs
-├── fixtures/             # saved test states (committed)
-├── workspace/            # runtime data (gitignored)
-└── forge.yaml            # dev config (workspace dirs, fixtures path)
+```bash
+sha256sum forge_v0.1.0_linux_amd64.tar.gz
+# macOS: shasum -a 256 forge_v0.1.0_darwin_arm64.tar.gz
 ```
 
-`plugin.json` is the official manifest. `forge.yaml` holds dev-only config that shouldn't be part of the published plugin.
+For local development from a checkout:
 
-### forge.yaml
+```bash
+go build -o forge ./cmd/forge
+```
+
+Confirm the installed binary:
+
+```bash
+forge version
+```
+
+## Upgrade
+
+Upgrade to the latest tagged release:
+
+```bash
+go install github.com/alextacho/forge/cmd/forge@latest
+```
+
+Upgrade or downgrade to a specific version:
+
+```bash
+go install github.com/alextacho/forge/cmd/forge@v0.1.0
+```
+
+If you installed from a release archive, replace the old `forge` binary with the
+new one from the matching archive for your platform.
+
+## Project setup
+
+Create `.forge/config.yaml` in the project root:
 
 ```yaml
-workspace:
-  root: workspace/
-  structure:
-    - profiles
-    - snapshots
-    - runs
-
-dev:
-  fixtures_dir: fixtures/
+paths:
+  - workspace/
+  - config/generated.yaml
 ```
 
-### Fixtures
+Managed paths must be literal project-relative files or directories. Absolute paths,
+glob patterns, `..`, overlapping entries, and anything under `.forge/` are rejected.
 
-A **fixture** is a named snapshot of your plugin's runtime state — workspace files and any user-provided context. Fixtures are committed to source control so you can restore a known state for testing.
+The CLI searches upward from the current directory for this configuration, so commands
+can run from nested directories.
 
+Recommended layout:
+
+```text
+project/
+├── .forge/
+│   ├── config.yaml       # commit
+│   ├── templates/        # commit
+│   └── snapshots/        # ignore
+├── workspace/
+└── config/
+    └── generated.yaml
 ```
-fixtures/
-  baseline/
-    .fixture.yaml         # description + metadata
-    workspace/            # snapshot of workspace contents
-    context/              # snapshot of user-provided context files
+
+Add this to the project `.gitignore`:
+
+```gitignore
+.forge/snapshots/
 ```
-
-### Snippets
-
-Snippets are pre-built, installable components — MCP server configs, hook patterns, infrastructure scripts. They live inside the `forge` plugin and can be copied into any plugin project with `/forge:add`.
-
----
 
 ## Commands
 
-### `/forge:new`
-
-Interactive scaffold for a new plugin project.
-
-Asks for plugin name, description, and what skills/agents/commands it will have. Generates `plugin.json`, `forge.yaml`, folder structure, and `.gitignore`.
-
-```
-/forge:new
-```
-
----
-
-### `/forge:link`
-
-Symlink the plugin's skills, agents, and commands into `.claude/` so Claude Code discovers them immediately without reinstalling. Essential for live development.
-
-```
-/forge:link
+```bash
+forge help
+forge version
+forge --version
+forge instructions
+forge status
+forge save [name] [--yes] [--no-clobber]
+forge load [name] [--yes]
+forge reset [--yes]
+forge mcp
 ```
 
-Safe to re-run. Skips symlinks that already point to the right place. Warns if a symlink exists but points elsewhere.
+### Version
 
----
-
-### `/forge:unlink`
-
-Remove all `.claude/` symlinks for this plugin. Never touches source files.
-
-```
-/forge:unlink
+```bash
+forge version
+forge --version
 ```
 
----
+Prints the release version, commit, and build date. Development builds print `dev`
+unless version metadata is supplied at build time.
 
-### `/forge:status`
+### Instructions
 
-Full dashboard of current plugin state.
-
-```
-Plugin: my-plugin v0.1.0 [draft]
-
-Application:
-  skills/
-    ✓ analyze.md
-    ✗ report.md  (file missing)
-  agents: (none)
-  commands: (none)
-
-Context:
-  shipped defaults:
-    ✓ context/prompts.md
-  setup required:
-    ✓ context/config.md
-    ✗ context/credentials.md  — "Add your API key"
-  setup optional:
-    ✗ context/overrides.md  — not yet created
-
-Workspace: (workspace/)
-  profiles/     3 files
-  snapshots/    0 files
-  runs/         1 file
-
-Fixtures: (fixtures/)
-  baseline  — "Clean state, no prior runs"
-  with-data — "Three profiles loaded"
-
-Discovery symlinks (.claude/skills/):
-  ✓ analyze.md
-  ✗ report.md  (not linked — run /forge:link)
+```bash
+forge instructions
 ```
 
----
+Prints stable, agent-oriented instructions for project discovery, configuration,
+snapshotting, reset behavior, and safety constraints. Use this when an agent needs
+to learn how Forge should be used inside a project.
 
-### `/forge:validate`
+### Status
 
-Full integrity check. Reports all errors before you waste time packaging.
-
-Checks:
-- `plugin.json` is valid JSON and has required fields
-- Every declared skill/agent/command file exists
-- Every declared context file exists
-- No declared path leaks into `.claude/` or `workspace/`
-- Each skill has valid frontmatter (`name` + `description`)
-- Symlinks exist for each declared skill (warning only)
-
-Errors block `/forge:pack`. Warnings are advisory.
-
-```
-/forge:validate
+```bash
+forge status
 ```
 
----
+Inspects the current Forge project without changing files. It reports the project
+root, config path, configured managed paths and their current state, available
+snapshots, and configured template paths that are present.
 
-### `/forge:save [name]`
+### Save
 
-Snapshot current workspace and user-provided context into a named fixture.
-
-```
-/forge:save baseline
-/forge:save          # prompts for name
-```
-
-Saves workspace contents and user context files (those listed in `setup.required`/`setup.optional`). Does not save committed defaults — they're always present. Stages the fixture with `git add` and reminds you to review before committing.
-
----
-
-### `/forge:load [name]`
-
-Restore a named fixture into the workspace and context.
-
-```
-/forge:load baseline
-/forge:load          # shows available fixtures, prompts
+```bash
+forge save
+forge save baseline
 ```
 
-Warns if the workspace has content and asks to confirm overwrite.
+Without a name, `save` uses the snapshot name `default`. Saving the same name again
+replaces the previous snapshot.
 
----
+Use `--no-clobber` to fail when the snapshot already exists:
 
-### `/forge:reset`
-
-Clear workspace files and user-provided context. Keep committed defaults.
-
-```
-/forge:reset
+```bash
+forge save baseline --no-clobber
 ```
 
-Previews what will be deleted and asks to confirm. Does not remove the workspace directory structure itself.
+Each managed path is recorded as present or absent. Loading the snapshot later removes
+a path that was absent when saved.
 
-Use this to return to a clean state before loading a fixture. The combination of `reset` + `load` is your test setup cycle.
+### Load
 
----
-
-### `/forge:snippets [category|keyword]`
-
-Browse available snippets.
-
-```
-/forge:snippets              # show all categories
-/forge:snippets mcp          # filter by category
-/forge:snippets playwright   # search by name or keyword
+```bash
+forge load
+forge load baseline
+forge load default
 ```
 
-Example output:
+Without a name, `load` uses `default`. Loading is exact: all managed paths are cleared
+before present snapshot entries are restored. Extra files do not survive.
 
-```
-MCP Servers
-  playwright     Browser automation via Playwright MCP
-  notion         Notion workspace read/write
-  google-drive   Google Drive file access
-  github         GitHub repos, PRs, issues
-  slack          Slack messaging and search
-  linear         Linear issue tracking
-  gmail          Gmail read and draft
-  gcal           Google Calendar access
+### Reset
 
-Infrastructure
-  daily-cron     Daily scheduler — runs a skill on a cron schedule
-  weekly-digest  Weekly summary trigger
-
-Hooks
-  format-on-save Auto-format files after Write/Edit
-  lint-on-save   Run linter after code changes
-  post-commit    Hook that runs after each commit
-
-Run /forge:add <name> to install a snippet.
+```bash
+forge reset
 ```
 
----
+Reset clears every managed path, then restores matching content from
+`.forge/templates/`. Templates mirror project-relative paths:
 
-### `/forge:add <snippet>`
-
-Install a snippet into the plugin project.
-
-```
-/forge:add mcp/playwright
-/forge:add mcp/notion
-/forge:add hooks/format-on-save
-/forge:add infra/daily-cron
+```text
+.forge/templates/
+├── workspace/
+│   └── seed.txt
+└── config/
+    └── generated.yaml
 ```
 
-Copies the snippet's files into the appropriate location in your plugin project and shows what was added and what (if anything) needs manual configuration (e.g. env vars, API keys).
+A managed path with no matching template remains absent.
 
----
+### MCP
 
-### `/forge:release [patch|minor|major]`
-
-Bump the version, commit, and push a new release. Default: `patch`.
-
-```
-/forge:release patch
-/forge:release minor
-/forge:release major
+```bash
+forge mcp
 ```
 
-Pre-checks:
-1. `/forge:validate` must pass (no errors)
-2. Git working tree must be clean
+Runs a read-only MCP server over stdio for agent discoverability. The server exposes:
 
-Steps: increments the semver version in `plugin.json` and `marketplace.json`, sets `status: "published"`, commits both files, and pushes. Claude Code marketplaces pull directly from GitHub, so this is the complete release flow.
+- `forge_instructions`
+- `forge_config_schema`
+- `forge_project_status`
+- `forge_list_snapshots`
 
----
+It also exposes resources:
 
-### `/forge:pack`
+- `forge://instructions`
+- `forge://config-schema`
+- `forge://status`
 
-Validate and package the plugin into a distributable zip file. Only needed for manual or offline distribution — not required for marketplace releases.
+The MCP server does not expose mutating tools. Agents should use it to discover how
+Forge works and inspect project state, then call the CLI deliberately for `save`,
+`load`, or `reset`.
 
-```
-/forge:pack
-```
+Example MCP server configuration:
 
-Pre-checks:
-1. `/forge:validate` must pass (no errors)
-2. Git working tree must be clean
-3. `plugin.json` `status` must be `"published"`
-
-Output: `dist/<name>-v<version>.plugin`
-
-Always excludes: `workspace/`, `fixtures/`, `forge.yaml`, `.claude/`, `.dev/`.
-
----
-
-## Typical workflows
-
-### Starting a new plugin
-
-```
-mkdir my-plugin && cd my-plugin
-/forge:new
-/forge:link
-# start writing skills...
+```json
+{
+  "mcpServers": {
+    "forge": {
+      "command": "forge",
+      "args": ["mcp"]
+    }
+  }
+}
 ```
 
-### Daily development loop
+## Confirmation
 
-```
-# edit skills, test in Claude Code via symlinks
-/forge:status        # check what's wired up
-/forge:validate      # catch errors early
-```
+All commands print a short summary and ask for confirmation:
 
-### Testing with fixtures
-
-```
-/forge:reset
-/forge:load baseline
-# run your skills, inspect output
-/forge:save after-first-run
+```text
+Load snapshot "baseline": remove 2 present paths, restore 1, leave 1 absent.
+Continue? [y/N]
 ```
 
-### Releasing via marketplace
+Use `--yes` for scripts and CI:
 
-```
-/forge:validate
-/forge:release patch   # bumps version, commits, pushes — done
-```
-
-### Packaging for manual distribution
-
-```
-/forge:validate
-# bump version in plugin.json and marketplace.json, set status: "published"
-/forge:pack
+```bash
+forge load baseline --yes
+forge reset --yes
 ```
 
----
+`--yes` bypasses approval only. Configuration, snapshot, and filesystem validation
+still run.
 
-## What forge does not touch
+## Filesystem behavior
 
-- Files inside `skills/`, `agents/`, `commands/`, `context/` — those are the plugin's responsibility
-- Committed defaults (`publish.context` files)
-- The workspace directory structure (reset clears contents, not dirs)
+`forge` preserves:
 
----
+- file contents
+- directory structure
+- permission bits
+- symlink text
+
+It does not preserve ownership, ACLs, extended attributes, or timestamps.
+
+Symlinks are copied as symlinks and never traversed. Unsupported filesystem objects,
+including sockets, devices, and named pipes, fail validation.
+
+Snapshot replacement is staged before publication. Load and reset validate all source
+content before clearing managed paths, but an unexpected write or permission failure
+during restoration can still leave managed paths partially restored. The command exits
+non-zero and reports this condition.
+
+Do not run mutating `forge` commands concurrently within the same project.
+
+## Development
+
+```bash
+go test ./...
+go vet ./...
+```
+
+Build a local binary with explicit version metadata:
+
+```bash
+go build \
+  -ldflags "-X github.com/alextacho/forge/internal/version.Version=dev -X github.com/alextacho/forge/internal/version.Commit=$(git rev-parse --short=12 HEAD) -X github.com/alextacho/forge/internal/version.Date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  -o forge ./cmd/forge
+```
+
+## Versioning and releases
+
+Forge uses semantic version tags:
+
+```text
+vMAJOR.MINOR.PATCH
+```
+
+Release tags trigger the GitHub Actions release workflow. The workflow runs CI,
+builds platform archives, stamps `forge version`, generates SHA256 checksums, and
+publishes a GitHub Release.
+
+Create a release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Use version increments as follows:
+
+- Patch: compatible bug fixes and documentation-only changes.
+- Minor: backward-compatible commands, flags, MCP tools, or behavior.
+- Major: breaking command syntax, config format, snapshot format, or MCP contract.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT

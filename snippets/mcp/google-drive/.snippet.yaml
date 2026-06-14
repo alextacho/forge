@@ -1,6 +1,0 @@
-name: google-drive
-category: mcp
-description: Google Drive file access via gdrive MCP
-installs:
-  - .mcp.json
-notes: "Requires a Google OAuth credentials file. Run `npx @googleapis/mcp-server-gdrive auth` to authenticate."

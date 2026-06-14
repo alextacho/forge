@@ -1,4 +1,3 @@
-workspace/
+.forge/snapshots/
 dist/
-.claude/
 .DS_Store
