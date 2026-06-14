@@ -26,7 +26,7 @@ go install github.com/alextacho/forge/cmd/forge@latest
 Install a specific version:
 
 ```bash
-go install github.com/alextacho/forge/cmd/forge@v0.1.0
+go install github.com/alextacho/forge/cmd/forge@v0.1.1
 ```
 
 Or download a prebuilt binary from the
@@ -35,8 +35,8 @@ published for macOS, Linux, and Windows on amd64 and arm64. Verify a downloaded
 archive with `checksums.txt`:
 
 ```bash
-sha256sum forge_v0.1.0_linux_amd64.tar.gz
-# macOS: shasum -a 256 forge_v0.1.0_darwin_arm64.tar.gz
+sha256sum forge_v0.1.1_linux_amd64.tar.gz
+# macOS: shasum -a 256 forge_v0.1.1_darwin_arm64.tar.gz
 ```
 
 For local development from a checkout:
@@ -62,7 +62,7 @@ go install github.com/alextacho/forge/cmd/forge@latest
 Upgrade or downgrade to a specific version:
 
 ```bash
-go install github.com/alextacho/forge/cmd/forge@v0.1.0
+go install github.com/alextacho/forge/cmd/forge@v0.1.1
 ```
 
 If you installed from a release archive, replace the old `forge` binary with the
@@ -344,8 +344,8 @@ publishes a GitHub Release.
 Create a release:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.1
+git push origin v0.1.1
 ```
 
 Use version increments as follows:
