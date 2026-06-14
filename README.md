@@ -125,7 +125,7 @@ forge --version
 ```
 
 Prints the release version, commit, and build date. Development builds print `dev`
-unless version metadata is supplied at build time.
+unless version metadata or Go module build information is available.
 
 ### Instructions
 
